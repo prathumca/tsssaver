@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:control">
+   </FileRef>
+   <Group
+      location = "group:layout"
+      name = "layout">
+      <Group
+         location = "group:DEBIAN"
+         name = "DEBIAN">
+         <FileRef
+            location = "group:control">
+         </FileRef>
+         <FileRef
+            location = "group:postinst">
+         </FileRef>
+      </Group>
+   </Group>
+   <FileRef
+      location = "group:Makefile">
+   </FileRef>
+   <Group
+      location = "group:SpringBoard"
+      name = "SpringBoard">
+      <FileRef
+         location = "group:TSSSaverSB.plist">
+      </FileRef>
+      <FileRef
+         location = "group:TSSSaver.xm"
+         assignedFileDataType = "public.objective-c-source">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:TSSSaver.xcodeproj">
+   </FileRef>
+</Workspace>
