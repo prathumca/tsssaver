@@ -4,6 +4,9 @@
    <FileRef
       location = "group:control">
    </FileRef>
+   <FileRef
+      location = "group:postinst">
+   </FileRef>
    <Group
       location = "group:layout"
       name = "layout">

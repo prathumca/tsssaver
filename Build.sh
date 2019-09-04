@@ -34,7 +34,7 @@ echo "Is it a beta package (y/n)?"
 read answer
 if echo "$answer" | grep -iq "^N" ;
 then
-OUTPUT_DIR="../Bigboss/"
+OUTPUT_DIR="../../Development/Tweaks/Bigboss/"
 DEBUG="0"
 else
 DEBUG="1"

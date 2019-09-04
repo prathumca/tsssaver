@@ -18,6 +18,8 @@
 
 @interface TSSDeviceTableViewController () <UITextFieldDelegate>
 
+@property (nonatomic, assign) BOOL isDeviceEdited;
+
 @end
 
 @implementation TSSDeviceTableViewController
@@ -29,6 +31,9 @@
     
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    if (self.isDeviceEdited) {
+        [self update];
+    }
     self.title = nil;
 }
 
@@ -75,6 +80,8 @@
             __weak __typeof(self)weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.tableView reloadData];
+                //also reset navigation bar
+                [weakSelf updateNavigationBarButtons:NO];
             });
         }
     }
@@ -107,6 +114,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.tableView reloadData];
             });
+            weakSelf.isDeviceEdited = YES;
         };
     } else if ([segue.identifier isEqualToString:@"savedBlobs"]) {
         TSSSavedBlobsViewController* savedBlobsVC = (TSSSavedBlobsViewController*)[segue destinationViewController];
@@ -158,7 +166,7 @@
 //                                [weakSelf.deviceViewModel setValue:[NSDate date] forKey:@"lastUpdated"];
 //                                [weakSelf.tableView reloadData];
 //                                [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
-//                                [TSSUtils saveDeviceToDisk:[weakSelf.deviceViewModel.device dictionaryRepresentation]];
+//                                [self update];
 //                            }
                         } else {
                             if (blob != nil) {
@@ -167,10 +175,10 @@
                                 [weakSelf.deviceViewModel setValue:[NSDate date] forKey:@"lastUpdated"];
                                 BOOL isAddDevice = weakSelf.deviceViewModel.udid <= 0;
                                 [weakSelf.tableView reloadData];
-                                [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
-                                [TSSUtils saveDeviceToDisk:[weakSelf.deviceViewModel.device dictionaryRepresentation]];
+                                [weakSelf.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
+                                [weakSelf update];
                                 if (isAddDevice) {
-                                    [weakSelf.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Close", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(cancel)] animated:YES];
+                                    [weakSelf.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Close", @"Close") style:UIBarButtonItemStyleDone target:weakSelf action:@selector(cancel)] animated:YES];
                                 }
                             }
                         }
@@ -186,7 +194,14 @@
 #pragma mark - Cancel
     
 - (void)cancel {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.deviceViewModel.udid > 0) {
+//        [self updateNavigationBarButtons:NO];
+//        //reload the device too
+//        self.deviceViewModel = [self.deviceListDelegate model:self.deviceViewModel.udid];
+//        [self.tableView reloadData];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
     
 #pragma mark -
@@ -200,7 +215,7 @@
     [self.deviceViewModel.device setValue:@(sender.isOn) forKey:cell.reuseIdentifier];
     //remove observer
     [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
-    [TSSUtils saveDeviceToDisk:[self.deviceViewModel.device dictionaryRepresentation]];
+    [self update];
 }
 
 #pragma mark - Table view data source
@@ -273,6 +288,11 @@
     UITableViewCell* cell = (UITableViewCell*)[textField.superview superview];
     if (cell) {
         [self.deviceViewModel setValue:textField.text forKey:[cell reuseIdentifier]];
+//        [self updateNavigationBarButtons:YES];
+        if ([[cell reuseIdentifier] isEqualToString:@"name"]) {
+            self.title = self.deviceViewModel.name;
+        }
+        self.isDeviceEdited = YES;
     }
 }
     
@@ -291,6 +311,28 @@
         }
     }
     return YES;
+}
+
+#pragma mark -
+
+- (void)updateNavigationBarButtons:(BOOL)isEditing {
+//    if (isEditing) {
+//        if (self.navigationItem.leftBarButtonItem == nil) {
+//            [self.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)] animated:YES];
+//        }
+//        if (self.navigationItem.rightBarButtonItem == nil) {
+//            [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(update)] animated:YES];
+//        }
+//    } else {
+//        [self setEditing:NO animated:YES];
+//        [self.navigationItem setLeftBarButtonItem:nil animated:YES];
+//        [self.navigationItem setRightBarButtonItem:nil animated:YES];
+//    }
+}
+
+- (void)update {
+    [TSSUtils saveDeviceToDisk:[self.deviceViewModel.device dictionaryRepresentation]];
+    self.isDeviceEdited = NO;
 }
     
 #pragma mark - Dealloc
