@@ -9,6 +9,7 @@
 #import <Social/Social.h>
 
 #import "NSString+Utils.h"
+#import "UIViewController+Utils.h"
 #import "TSSUtils.h"
 #import "TSSDeviceTableViewCell.h"
 #import "TSSDevicesListViewModel.h"
@@ -211,7 +212,7 @@ static void devicesListUpdated(CFNotificationCenterRef center, void *observer, C
 }
     
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    TSSDeviceViewModel* deviceModel = [self.devicesViewModel deviceModelAtIndex:indexPath.section + indexPath.row];
+    TSSDeviceViewModel* deviceModel = [self.devicesViewModel deviceModelAtIndex:(indexPath.section - 1) + indexPath.row];
     if ([self.devicesViewModel deleteDevice:deviceModel]) {
         [tableView beginUpdates];
         if (self.devicesViewModel.devicesCount <= 1) {
@@ -220,6 +221,8 @@ static void devicesListUpdated(CFNotificationCenterRef center, void *observer, C
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
         [tableView endUpdates];
+    } else {
+        [self tss__showError:NSLocalizedString(@"Error while deleting device.", @"Error while deleting device.")];
     }
 }
 

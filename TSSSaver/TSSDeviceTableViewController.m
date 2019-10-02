@@ -114,7 +114,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.tableView reloadData];
             });
-            weakSelf.isDeviceEdited = YES;
+            weakSelf.isDeviceEdited = weakSelf.deviceViewModel.udid > 0;
         };
     } else if ([segue.identifier isEqualToString:@"savedBlobs"]) {
         TSSSavedBlobsViewController* savedBlobsVC = (TSSSavedBlobsViewController*)[segue destinationViewController];
@@ -159,15 +159,13 @@
                     [weakSelf dismissViewControllerAnimated:YES completion:^{
                         if (error != nil) {
                             [weakSelf tss__showError:error.localizedDescription];
-                            //commented by Prathap: Donot update the time.
-//                            //check if user is continuously trying to save or not..
-//                            if ([error.userInfo[@"code"] integerValue] < 0) {
-//                                //then you can save/update device details.
-//                                [weakSelf.deviceViewModel setValue:[NSDate date] forKey:@"lastUpdated"];
-//                                [weakSelf.tableView reloadData];
-//                                [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
-//                                [self update];
-//                            }
+                            if ([error.userInfo[@"code"] integerValue] <= 0) {
+                                //then you can save/update device details.
+                                [weakSelf.deviceViewModel setValue:[NSDate date] forKey:@"lastUpdated"];
+                                [weakSelf.tableView reloadData];
+                                [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
+                                [self update];
+                            }
                         } else {
                             if (blob != nil) {
                                 NSString* message = [NSString stringWithFormat:NSLocalizedString(@"%@'s blobs saved successfully.", @"blobs saved successfully"), weakSelf.deviceViewModel.name];
@@ -213,9 +211,11 @@
 - (IBAction)switchAction:(UISwitch *)sender {
     UITableViewCell* cell = (UITableViewCell*)[sender.superview superview];
     [self.deviceViewModel.device setValue:@(sender.isOn) forKey:cell.reuseIdentifier];
-    //remove observer
-    [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
-    [self update];
+    if (self.deviceViewModel.udid > 0) {
+        //remove observer
+        [self.deviceViewModel.device removeObserver:self forKeyPath:@"autoUpdate"];
+        [self update];
+    }
 }
 
 #pragma mark - Table view data source
@@ -292,7 +292,7 @@
         if ([[cell reuseIdentifier] isEqualToString:@"name"]) {
             self.title = self.deviceViewModel.name;
         }
-        self.isDeviceEdited = YES;
+        self.isDeviceEdited = self.deviceViewModel.udid > 0;
     }
 }
     

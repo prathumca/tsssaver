@@ -185,14 +185,13 @@ static UIImage* tssImage = nil;
         for (NSInteger i = 0; i < devices.count; i++) {
             NSDictionary* device = devices[i];
             if ([device[@"udid"] integerValue] == udid) {
-                //then its an update
                 deviceToUpdateIdx = i;
                 break;
             }
         }
-        NSString* devicesLocation = [self devicesFileLocation];
-        NSMutableArray* devicesToUpdate = [[NSMutableArray alloc] initWithArray:devices];
         if (deviceToUpdateIdx >= 0) {
+            NSString* devicesLocation = [self devicesFileLocation];
+            NSMutableArray* devicesToUpdate = [[NSMutableArray alloc] initWithArray:devices];
             [devicesToUpdate removeObjectAtIndex:deviceToUpdateIdx];
             [devicesToUpdate writeToFile:devicesLocation atomically:YES];
         }

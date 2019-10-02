@@ -1,8 +1,8 @@
 Package: com.iarrays.tsssaver
-Name: TSS Saver
-Version: 1.0-beta-3
+Name: TSSSaver 2
+Version: 1.0-beta-4
 Architecture: iphoneos-arm
-Description: A one-click tool to save blobs using TSSsaver.1conan.com, a fork to @nullpixel's repo https://github.com/nullpixel/tsssaver. Just install and leave the rest, this tool automatically saves SHSH blobs to TSSsaver.1conan.com.
+Description: A one-click tool to save blobs using TSSsaver.1conan.com, idea from @nullpixel's TSS Saver but entirely rewritten in Objective-C to support more features. Just install and leave the rest, this tool automatically saves SHSH blobs to TSSsaver.1conan.com.
 Homepage: http://iarrays.com/
 Depiction: http://iarrays.com/depiction/tsssaver
 SileoDepiction: http://iarrays.com/sileo-depiction/tsssaver/tsssaver.json
@@ -11,5 +11,5 @@ Pre-Depends: firmware (>=8.0)
 Depends: mobilesubstrate, net.limneos.libbulletin
 Author: IArrays <support@iarrays.com>
 Sponsor: IArrays
-Section: Applications
+Section: Utilities
 Icon: file://Applications/TSSSaver.app/AppIcon40x40@2x.png
